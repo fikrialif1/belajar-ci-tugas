@@ -6,6 +6,7 @@ use App\Controllers\BaseController;
 use CodeIgniter\HTTP\ResponseInterface;
 
 use App\Models\UserModel; 
+use App\Models\DiskonModel;
 
 class AuthController extends BaseController
 {
@@ -38,6 +39,17 @@ class AuthController extends BaseController
                         'role' => $dataUser['role'],
                         'isLoggedIn' => TRUE
                     ]);
+
+                    // diskon
+                    $diskonModel = new DiskonModel();
+                    $diskon = $diskonModel->where('tanggal', date('Y-m-d'))->first();
+
+                    if ($diskon) {
+                        session()->set([
+                            'diskon_nominal' => $diskon['nominal'],
+                            'diskon_tanggal' => $diskon['tanggal']
+                        ]);
+                    }
 
                     return redirect()->to(base_url('/'));
                 } else {

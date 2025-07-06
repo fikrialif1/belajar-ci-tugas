@@ -13,15 +13,15 @@ class ApiController extends ResourceController
 {
     protected $apiKey;
     protected $user;
-    protected $transactionModel;
-    protected $transactionDetailModel;
+    protected $transaction;
+    protected $transaction_detail;
 
     function __construct()
     {
         $this->apiKey = env('API_KEY');
         $this->user = new UserModel();
-        $this->transactionModel = new TransactionModel();
-        $this->transactionDetailModel = new TransactionDetailModel();
+        $this->transaction = new TransactionModel();
+        $this->transaction_detail = new TransactionDetailModel();
     }
 
     /**
@@ -31,32 +31,41 @@ class ApiController extends ResourceController
      */
     public function index()
     {
-        $data = [ 
-            'results' => [],
-            'status' => ["code" => 401, "description" => "Unauthorized"]
-        ];
+    $data = [ 
+        'results' => [],
+        'status' => ["code" => 401, "description" => "Unauthorized"]
+    ];
 
-        $headers = $this->request->headers(); 
+    $headers = $this->request->headers(); 
 
-        array_walk($headers, function (&$value, $key) {
-            $value = $value->getValue();
-        });
+    array_walk($headers, function (&$value, $key) {
+        $value = $value->getValue();
+    });
 
-        if(array_key_exists("Key", $headers)){
-            if ($headers["Key"] == $this->apiKey) {
-                $penjualan = $this->transactionModel->findAll();
+    if(array_key_exists("Key", $headers)){
+        if ($headers["Key"] == $this->apiKey) {
+            $penjualan = $this->transaction->findAll();
+            
+            foreach ($penjualan as &$pj) {
+                $details = $this->transaction_detail->where('transaction_id', $pj['id'])->findAll();
                 
-                foreach ($penjualan as &$pj) {
-                    $pj['details'] = $this->transactionDetailModel->where('transaction_id', $pj['id'])->findAll();
+                // Hitung jumlah item
+                $jumlah_item = 0;
+                foreach ($details as $d) {
+                    $jumlah_item += $d['jumlah'];
                 }
 
-                $data['status'] = ["code" => 200, "description" => "OK"];
-                $data['results'] = $penjualan;
-
+                $pj['details'] = $details;
+                $pj['jumlah_item'] = $jumlah_item;
             }
-        } 
 
-        return $this->respond($data);
+            $data['status'] = ["code" => 200, "description" => "OK"];
+            $data['results'] = $penjualan;
+        }
+    } 
+
+    return $this->respond($data);
+
     }
 
     /**

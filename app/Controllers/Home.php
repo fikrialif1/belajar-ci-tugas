@@ -9,16 +9,16 @@ use App\Models\TransactionDetailModel;
 class Home extends BaseController
 {
     protected $product;
-    protected $transactionModel;
-    protected $transactionDetailModel;
+    protected $transaction;
+    protected $transaction_detai;
 
     function __construct()
     {
         helper('number');
         helper('form');
         $this->product = new ProductModel();
-        $this->transactionModel = new TransactionModel();
-        $this->transactionDetailModel = new TransactionDetailModel();
+        $this->transaction = new TransactionModel();
+        $this->transaction_detail = new TransactionDetailModel();
     }
 
     public function index()
@@ -34,14 +34,14 @@ class Home extends BaseController
         $username = session()->get('username');
         $data['username'] = $username;
 
-        $buy = $this->transactionModel->where('username', $username)->findAll();
+        $buy = $this->transaction->where('username', $username)->findAll();
         $data['buy'] = $buy;
 
         $product = [];
 
         if (!empty($buy)) {
             foreach ($buy as $item) {
-                $detail = $this->transactionDetailModel->select('transaction_detail.*, product.nama, product.harga, product.foto')->join('product', 'transaction_detail.product_id=product.id')->where('transaction_id', $item['id'])->findAll();
+                $detail = $this->transaction_detail->select('transaction_detail.*, product.nama, product.harga, product.foto')->join('product', 'transaction_detail.product_id=product.id')->where('transaction_id', $item['id'])->findAll();
 
                 if (!empty($detail)) {
                     $product[$item['id']] = $detail;

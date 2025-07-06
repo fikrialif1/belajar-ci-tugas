@@ -5,7 +5,7 @@ namespace App\Controllers;
 use App\Controllers\BaseController;
 use CodeIgniter\HTTP\ResponseInterface;
 
-class FaqController extends BaseController
+class faqController extends BaseController
 {
     public function index()
     {

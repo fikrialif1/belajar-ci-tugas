@@ -43,6 +43,15 @@ $routes->get('get-location', 'TransaksiController::getLocation', ['filter' => 'a
 $routes->get('get-cost', 'TransaksiController::getCost', ['filter' => 'auth']);
 
 $routes->get('profile', 'Home::profile', ['filter' => 'auth']);
-$routes->get('faq', 'FaqController::index', ['filter' => 'auth']);
+
+$routes->group('diskon', ['filter' => 'auth'], function ($routes) { 
+    $routes->get('', 'DiskonController::index');
+    $routes->post('', 'DiskonController::create');
+    $routes->post('edit/(:any)', 'DiskonController::edit/$1');
+    $routes->get('delete/(:any)', 'DiskonController::delete/$1');
+});
+
+$routes->get('faq', 'faqController::index', ['filter' => 'auth']);
 
 $routes->resource('api', ['controller' => 'apiController']);
+
