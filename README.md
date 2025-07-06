@@ -140,7 +140,7 @@ Halaman untuk mengelola daftar produk.
   - Nomor
   - Tanggal
   - Nominal
-  - Aksi: Edit | Hapus
+  - Aksi: Ubah | Hapus
 
 ### 5.3 Fitur Tambah Diskon
 - Modal input:
